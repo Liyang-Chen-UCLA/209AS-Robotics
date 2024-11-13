@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "D:/Course/209ASRobotics/week3"
+            // "cwd": "D:/Course/209ASRobotics/week3"
         }
     ]
 }

@@ -114,6 +114,10 @@ class QLearning:
         # Create replay buffer
         self.replay_buffer = ReplayBuffer(self.params.buffer_size)
         
+        # Add episode counter for target network update
+        self.episode_count = 0
+        self.target_update_frequency = 15  # Update every 5 episodes
+        
     def select_action(self, state: np.ndarray, epsilon: float = 0.0) -> float:
         """Select action using epsilon-greedy policy"""
         if random.random() < epsilon:
@@ -187,17 +191,18 @@ class QLearning:
         loss.backward()
         self.optimizer.step()
         
-        # Soft update target network
-        for target_param, param in zip(
-            self.target_network.parameters(), 
-            self.q_network.parameters()
-        ):
-            target_param.data.copy_(
-                self.params.tau * param.data + 
-                (1.0 - self.params.tau) * target_param.data
-            )
-        
         return loss.item()
+
+    def update_target_network(self):
+        """Hard update target network"""
+        self.target_network.load_state_dict(self.q_network.state_dict())
+        # print(f"Target network updated at episode {self.episode_count}")
+        
+    def increment_episode(self):
+        """Increment episode counter and update target network if needed"""
+        self.episode_count += 1
+        if self.episode_count % self.target_update_frequency == 0:
+            self.update_target_network()
     
     def save_transition(
         self, 

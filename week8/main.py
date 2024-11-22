@@ -83,7 +83,7 @@ def train_agent(
     # Exploration parameters
     epsilon = 1.0
     min_epsilon = 0.05
-    epsilon_decay = 0.995
+    epsilon_decay = 0.9
     
     # Progress bar
     pbar = tqdm(range(num_episodes), desc="Training")
@@ -118,14 +118,16 @@ def train_agent(
         # Visualize trajectory
         if (episode + 1) % render_interval == 0:
             visualize_trajectory(states, actions, rewards, episode + 1)
-    
+        
+        agent.increment_episode()
+
     return training_rewards, eval_rewards
 
 def evaluate_agent(
     agent: QLearning,
     env: NumberlineEnv,
     num_episodes: int = 5,
-    max_steps: int = 200
+    max_steps: int = 50
 ) -> float:
     """Evaluate the agent's performance"""
     eval_rewards = []
@@ -215,10 +217,10 @@ if __name__ == "__main__":
     torch.manual_seed(42)
     
     # Training parameters
-    NUM_EPISODES = 10
-    MAX_STEPS = 200
-    EVAL_INTERVAL = 10
-    RENDER_INTERVAL = 10
+    NUM_EPISODES = 1000
+    MAX_STEPS = 50
+    EVAL_INTERVAL = 100
+    RENDER_INTERVAL = 100
     
     # Train agent
     print("Starting training...")

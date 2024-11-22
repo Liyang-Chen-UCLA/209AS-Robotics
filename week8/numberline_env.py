@@ -48,28 +48,18 @@ class NumberlineEnv:
         self.state = np.zeros((2, 1))
         
     def compute_reward(self, state: np.ndarray, action: float) -> Tuple[float, bool]:
-        """
-        Compute reward based on current state and action
-        """
+        """Compute reward based on current state and action"""
         position = state[0, 0]
         velocity = state[1, 0]
-        
-        # Calculate state error (distance from goal state)
-        state_error = np.sqrt(position**2 + velocity**2)
-        
-        # Main reward: Gaussian reward based on state error
-        position_velocity_reward = np.exp(-0.5 * state_error**2)
-        
-        # Control cost: quadratic
-        control_cost = -0.1 * action**2
-        
-        # Total reward
-        reward = position_velocity_reward + control_cost
-        
+
         # Check if goal is reached
         done = (abs(position) < self.params.goal_threshold and 
                 abs(velocity) < self.params.goal_threshold)
-        
+
+        if done:
+            return 10.0, True
+
+        reward = -abs(position) - 0.1*abs(action)
         return reward, done
     
     def reset(self, initial_state: Optional[np.ndarray] = None) -> np.ndarray:
